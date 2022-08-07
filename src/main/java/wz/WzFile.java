@@ -28,13 +28,17 @@ import wz.io.WzInputStream;
  */
 public final class WzFile extends WzObject<WzFile, WzObject<?, ?>> {
 
-    private String name;
+    private final String name;
     private short version;
     private WzDirectory root;
 
-    public WzFile(String wz, short ver) {
+    public WzFile(String wz) {
         name = wz;
-        version = ver;
+    }
+
+    public WzFile(String wz, int gameVersion) {
+        name = wz;
+        version = (short) gameVersion;
     }
 
     @Override
@@ -63,7 +67,7 @@ public final class WzFile extends WzObject<WzFile, WzObject<?, ?>> {
         String v = String.valueOf(ver);
         for (int i = 0; i < v.length(); i++) {
             ret *= 32;
-            ret += (int) v.charAt(i);
+            ret += v.charAt(i);
             ret += 1;
         }
         return ret & 0xFFFFFFFF;
