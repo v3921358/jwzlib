@@ -30,7 +30,8 @@ import wz.common.WzTool;
 public abstract class WzInputStream {
 
 	protected int hash;
-	protected byte[] key, unicodeKey;
+	protected byte[] key;
+	private char[] unicodeKey;
 	protected WzHeader header;
 	protected ThreadLocal<AtomicInteger> positions =
 			new ThreadLocal<AtomicInteger>() {
@@ -62,9 +63,9 @@ public abstract class WzInputStream {
 
 	public void setKey(byte[] data) {
 		key = data;
-		unicodeKey = new byte[0x7FFF];
+		unicodeKey = new char[65535];
 		for(int i = 0; i < unicodeKey.length; i++){
-			unicodeKey[i] = (byte) ((key[2 * i + 1] << 8) + key[2 * i]);
+			unicodeKey[i] = (char) ((key[2 * i + 1] << 8) + key[2 * i]);
 		}
 	}
 
@@ -72,7 +73,7 @@ public abstract class WzInputStream {
 		return key;
 	}
 	
-	public byte[] getUnicodeKey(){
+	public char[] getUnicodeKey(){
 		return unicodeKey;
 	}
 
@@ -105,6 +106,10 @@ public abstract class WzInputStream {
 
 	public short readShort() {
 		return (short) (read() + (read() << 8));
+	}
+
+	public int readShortAsInteger() {
+		return (read() + (read() << 8));
 	}
 
 	public int readInteger() {
@@ -237,7 +242,7 @@ public abstract class WzInputStream {
 		int invFlip = 0xAAAA;
 		char[] data = new char[length];
 		for (int i = 0; i < length; i++) {
-			data[i] = (char) ((short) (readShort() ^ invFlip++ ^ unicodeKey[i]));
+			data[i] = (char) ((readShortAsInteger() ^ invFlip++ ^ unicodeKey[i]));
 		}
 		return new String(data);
 	}
