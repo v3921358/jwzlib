@@ -49,6 +49,7 @@ public final class WzFile extends WzObject<WzFile, WzObject<?, ?>> {
         in.skip(4); // just going to be 0
         header.FILE_START = in.readInteger();
         header.COPYRIGHT = in.readStringByLen(header.FILE_START - 17);
+        in.skip(header.FILE_START - in.getPosition());
         in.setHeader(header);
         int encryptVersion = in.readShort();
         int detectedVersion = getRealVersionHash(encryptVersion);
@@ -57,7 +58,6 @@ public final class WzFile extends WzObject<WzFile, WzObject<?, ?>> {
         } else {
             in.setHash(getVersionHash(version));
         }
-        in.setHash(getVersionHash(version));
         root = new WzDirectory(name, header.FILE_START + 2, header.FILE_SIZE, 0);
         root.parse(in);
     }
