@@ -24,6 +24,7 @@ package wz.common;
 public enum WzVersion {
 
 	GMS,
-	EMS,
-	BMS;
+	OTHER, // CMS TMS EMS JMS MSEA
+	NONE
+
 }
