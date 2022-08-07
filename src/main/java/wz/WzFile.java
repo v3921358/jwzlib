@@ -42,16 +42,16 @@ public final class WzFile extends WzObject<WzFile, WzObject<?, ?>> {
 
 	@Override
 	public void parse(WzInputStream in) {
-		WzHeader h = new WzHeader();
-		h.IDENT = in.readStringByLen(4);
-		h.FILE_SIZE = in.readInteger();
+		WzHeader header = new WzHeader();
+		header.IDENT = in.readStringByLen(4);
+		header.FILE_SIZE = in.readInteger();
 		in.skip(4); // just going to be 0
-		h.FILE_START = in.readInteger();
-		h.COPYRIGHT = in.readNullTerminatedString();
-		in.setHeader(h);
+		header.FILE_START = in.readInteger();
+		header.COPYRIGHT = 	in.readStringByLen(header.FILE_START - 17);
+		in.setHeader(header);
 		in.readShort(); // enc ver
 		in.setHash(getVersionHash(version));
-		root = new WzDirectory(name, h.FILE_START + 2, h.FILE_SIZE, 0);
+		root = new WzDirectory(name, header.FILE_START + 2, header.FILE_SIZE, 0);
 		root.parse(in);
 	}
 
